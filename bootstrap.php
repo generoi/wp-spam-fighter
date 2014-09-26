@@ -3,7 +3,7 @@
 Plugin Name: WP Spam Fighter
 Plugin URI:  https://wordpress.org/plugins/wp-spam-fighter/
 Description: Comment spam prevention without moderation, captchas or questions
-Version:     0.2
+Version:     0.2.1
 Author:      Henri Benoit
 Author URI:  http://benohead.com
 */

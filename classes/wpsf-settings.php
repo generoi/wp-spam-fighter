@@ -103,7 +103,7 @@ if (!class_exists('WPSF_Settings')) {
             } else {
                 add_filter(
                     'plugin_action_links_' . plugin_basename(dirname(__DIR__)) . '/bootstrap.php',
-                    __CLASS__ . '::add_plugin_action_links'
+                    array($this, 'add_plugin_action_links')
                 );
             }
         }

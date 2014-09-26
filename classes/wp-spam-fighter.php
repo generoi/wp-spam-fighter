@@ -27,7 +27,7 @@ if (!class_exists('WordPress_Spam_Fighter')) {
         /**
          * Plugin version number
          */
-        const VERSION = '0.2';
+        const VERSION = '0.2.1';
 
         /**
          * prefix for this plugin, used for enqueued styles and scripts.

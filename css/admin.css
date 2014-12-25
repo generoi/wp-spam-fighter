@@ -1,0 +1,13 @@
+.settings_page_wpsf_settings table.form-table {
+    margin: 1em 0;
+}
+
+.settings_page_wpsf_settings .form-table th {
+    width: 265px !important;
+    vertical-align: middle;
+}
+
+.settings_page_wpsf_settings .form-table td, .settings_page_wpsf_settings .form-table th {
+    padding-bottom: 0;
+    padding-top: 5px;
+}

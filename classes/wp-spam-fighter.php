@@ -27,7 +27,7 @@ if (!class_exists('WordPress_Spam_Fighter')) {
         /**
          * Plugin version number
          */
-        const VERSION = '0.2.1';
+        const VERSION = '0.3';
 
         /**
          * prefix for this plugin, used for enqueued styles and scripts.
@@ -217,6 +217,8 @@ if (!class_exists('WordPress_Spam_Fighter')) {
             add_action('comment_form_logged_in_after', array($this, 'comment_form_after_fields'), 1);
             add_action('pre_comment_on_post', array($this, 'pre_comment_on_post'));
             add_filter('pre_comment_approved', array($this, 'pre_comment_approved'), 10, 2);
+            add_action('comment_post', array($this, 'comment_post'), 10, 2);
+
 
             add_action('register_form', array($this, 'register_form'));
             add_action('signup_extra_fields', array($this, 'register_form'));
@@ -410,6 +412,14 @@ if (!class_exists('WordPress_Spam_Fighter')) {
                         <?php
                         $wpsf_not_a_spammer_enabled = true;
                     }
+                }
+            }
+        }
+
+        function comment_post( $comment_ID, $approved ) {
+            if (isset($this->modules['WPSF_Settings']->settings['others']['delete']) && $this->modules['WPSF_Settings']->settings['others']['delete']) {
+                if ($approved == 'spam') {
+                    wp_trash_comment( $comment_ID );
                 }
             }
         }

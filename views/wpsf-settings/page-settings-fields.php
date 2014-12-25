@@ -71,4 +71,9 @@ elseif ('wpsf_registration' == $field['label_for']) : ?>
     <input type="checkbox" name="wpsf_settings[others][registration]"
            id="wpsf_settings[others][registration]"
            value="1" <?php checked(1, $settings['others']['registration']) ?>>
+<?php
+elseif ('wpsf_delete' == $field['label_for']) : ?>
+    <input type="checkbox" name="wpsf_settings[others][delete]"
+           id="wpsf_settings[others][delete]"
+           value="1" <?php if (isset($settings['others']['delete'])) checked(1, $settings['others']['delete']) ?>>
 <?php endif; ?>

@@ -223,6 +223,7 @@ if (!class_exists('WPSF_Settings')) {
                 "javascript" => true,
                 "trackbacks" => false,
                 "registration" => true,
+                "delete" => false,
             );
 
             return array(
@@ -418,6 +419,7 @@ if (!class_exists('WPSF_Settings')) {
             $this->add_settings_field_others('wpsf_trackbacks', 'Do not check trackbacks/pingbacks');
             $this->add_settings_field_others('wpsf_javascript', 'JavaScript human check');
             $this->add_settings_field_others('wpsf_registration', 'Also protect from spammer registration');
+            $this->add_settings_field_others('wpsf_delete', 'Move Spam to Trash');
 
             // The settings container
             register_setting('wpsf_settings', 'wpsf_settings', array($this, 'validate_settings'));
@@ -565,6 +567,7 @@ if (!class_exists('WPSF_Settings')) {
             $new_settings = $this->setting_default_if_not_set($new_settings, 'others', 'trackbacks', false);
             $new_settings = $this->setting_default_if_not_set($new_settings, 'others', 'javascript', true);
             $new_settings = $this->setting_default_if_not_set($new_settings, 'others', 'registration', true);
+            $new_settings = $this->setting_default_if_not_set($new_settings, 'others', 'delete', false);
 
             return $new_settings;
         }

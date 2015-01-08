@@ -27,7 +27,7 @@ if (!class_exists('WordPress_Spam_Fighter')) {
         /**
          * Plugin version number
          */
-        const VERSION = '0.3';
+        const VERSION = '0.4';
 
         /**
          * prefix for this plugin, used for enqueued styles and scripts.
@@ -417,11 +417,6 @@ if (!class_exists('WordPress_Spam_Fighter')) {
         }
 
         function comment_post( $comment_ID, $approved ) {
-            if (isset($this->modules['WPSF_Settings']->settings['others']['delete']) && $this->modules['WPSF_Settings']->settings['others']['delete']) {
-                if ($approved == 'spam') {
-                    wp_trash_comment( $comment_ID );
-                }
-            }
         }
 
         /**
@@ -455,7 +450,29 @@ if (!class_exists('WordPress_Spam_Fighter')) {
                     }
                 }
             }
+            if ($approved === 'spam') {
+                if (isset($this->modules['WPSF_Settings']->settings['others']['delete']) && $this->modules['WPSF_Settings']->settings['others']['delete']) {
+                    add_action('wp_insert_comment', array(&$this, 'handle_auto_trash'), 0, 2);
+                }
+                if (isset($this->modules['WPSF_Settings']->settings['others']['discard']) && $this->modules['WPSF_Settings']->settings['others']['discard']) {
+                    add_action('wp_insert_comment', array(&$this, 'handle_auto_delete'), 0, 2);
+                }
+            }
             return $approved;
+        }
+
+        public function handle_auto_delete($id, $comment) {
+            if(!$comment && !is_object($cmt = get_comment($comment))){
+                return;
+            }
+            wp_delete_comment($id, true);
+        }
+
+        public function handle_auto_trash($id, $comment) {
+            if(!$comment && !is_object($cmt = get_comment($comment))){
+                return;
+            }
+            wp_trash_comment($id, false);
         }
 
         /**

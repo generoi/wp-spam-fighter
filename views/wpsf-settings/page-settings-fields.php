@@ -76,4 +76,9 @@ elseif ('wpsf_delete' == $field['label_for']) : ?>
     <input type="checkbox" name="wpsf_settings[others][delete]"
            id="wpsf_settings[others][delete]"
            value="1" <?php if (isset($settings['others']['delete'])) checked(1, $settings['others']['delete']) ?>>
+<?php
+elseif ('wpsf_discard' == $field['label_for']) : ?>
+    <input type="checkbox" name="wpsf_settings[others][discard]"
+           id="wpsf_settings[others][discard]"
+           value="1" <?php if (isset($settings['others']['discard'])) checked(1, $settings['others']['discard']) ?>>
 <?php endif; ?>

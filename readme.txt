@@ -4,7 +4,7 @@ Donate link: http://benohead.com/donate/
 Tags: anti spam plugin,anti spam protection,anti-spam,antispam,block,block spam,blog spam,bot,comment,comment spam,comment spam plugin,comment spam prevention,comments,comments spam,how to prevent spam,how to stop spam,mark as spam,plugin,plugin spam,plugins,plugins spam,prevent spam,security,spam,spam comment,spam comments,spam counter,spam filter,spam filter plugin,Spam Free,spam free wordpress,spam plugin,spam plugins,spam prevention,spam prevention wordpress,spam-bot,spam-bots,spambot,spamfree,spammer,spammers,spammy,stop spam,wordpress,wordpress spam block plugin
 Requires at least: 3.5
 Tested up to: 4.1
-Stable tag: 0.3
+Stable tag: 0.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -48,6 +48,10 @@ Yes, it does. This plugins detects a network activation and will allow you to se
 1. Settings
 
 == Changelog ==
+
+= 0.4 =
+
+* Added option to discard spam comments (without inserting them into the WordPress database) instead of just marking them as spam.
 
 = 0.3 =
 

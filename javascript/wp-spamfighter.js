@@ -10,8 +10,8 @@ function wpsfWrapper($) {
         init: function () {
             //Timestamp protection
             if (window.wpsf_timestamp_enabled) {
-                $('#commentform, #setupform').append('<input type="hidden" name="wpsfTS1" id="wpsfTS1" value="1" />');
-                $('#commentform, #setupform').append('<input type="hidden" name="wpsfTS2" id="wpsfTS2" value="1" />');
+                $('#commentform, #setupform, #registerform').append('<input type="hidden" name="wpsfTS1" id="wpsfTS1" value="1" />');
+                $('#commentform, #setupform, #registerform').append('<input type="hidden" name="wpsfTS2" id="wpsfTS2" value="1" />');
 
                 $('#wpsfTS1').val((new Date).getTime());
             }
@@ -22,7 +22,12 @@ function wpsfWrapper($) {
                 $("#wpsf_p").append(wpsf_label);
                 wpsf_label.append(wpsf_checkbox);
             }
-            $('#commentform, #setupform').submit(validateCommentForm);
+            //No Captcha reCaptcha protection
+            if (window.wpsf_recaptcha_enabled) {
+                var wpsf_recaptcha = $("<div>").attr("class", "g-recaptcha").attr("data-sitekey", window.captcha_site_key);
+                $("#wpsf_p").append(wpsf_recaptcha);
+            }
+            $('#commentform, #setupform, #registerform').submit(validateCommentForm);
 
         }
     }; // end wpsf
@@ -62,7 +67,7 @@ function validateCommentForm() {
     }
     //JavaScript protection
     if (window.wpsf_javascript_enabled) {
-        jQuery("<input>").attr("type", "hidden").attr("name", "wpsf_javascript").attr("value", "WPSF_JAVASCRIPT_TOKEN").appendTo('#commentform, #setupform');
+        jQuery("<input>").attr("type", "hidden").attr("name", "wpsf_javascript").attr("value", "WPSF_JAVASCRIPT_TOKEN").appendTo('#commentform, #setupform, #registerform');
     }
 
     return true;

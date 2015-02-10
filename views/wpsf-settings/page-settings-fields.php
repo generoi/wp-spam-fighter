@@ -42,6 +42,21 @@ elseif ('wpsf_honeypot_type' == $field['label_for']) : ?>
             value="text" <?php echo($settings['honeypot']['honeypot_type'] === "text" ? 'selected="selected"' : ''); ?>><?php _e("Text input field"); ?></option>
     </select>
 <?php
+elseif ('wpsf_recaptcha' == $field['label_for']) : ?>
+    <input type="checkbox" name="wpsf_settings[recaptcha][recaptcha]"
+           id="wpsf_settings[recaptcha][recaptcha]"
+           value="1" <?php checked(1, $settings['recaptcha']['recaptcha']) ?>>
+<?php
+elseif ('wpsf_captcha_site_key' == $field['label_for']) : ?>
+    <input type="text" name="wpsf_settings[recaptcha][captcha_site_key]"
+           id="wpsf_settings[recaptcha][captcha_site_key]"
+           value="<?php echo $settings['recaptcha']['captcha_site_key']; ?>">
+<?php
+elseif ('wpsf_captcha_secret_key' == $field['label_for']) : ?>
+    <input type="text" name="wpsf_settings[recaptcha][captcha_secret_key]"
+           id="wpsf_settings[recaptcha][captcha_secret_key]"
+           value="<?php echo $settings['recaptcha']['captcha_secret_key']; ?>">
+<?php
 elseif ('wpsf_avatar' == $field['label_for']) : ?>
     <input type="checkbox" name="wpsf_settings[others][avatar]"
            id="wpsf_settings[others][avatar]"

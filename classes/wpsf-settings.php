@@ -227,11 +227,18 @@ if (!class_exists('WPSF_Settings')) {
                 "discard" => false,
             );
 
+            $recaptcha = array(
+                "recaptcha" => false,
+                "captcha_site_key" => "",
+                "captcha_secret_key" => "",
+            );
+
             return array(
                 'db-version' => '0',
                 'timestamp' => $timestamp,
                 'honeypot' => $honeypot,
                 'others' => $others,
+                'recaptcha' => $recaptcha
             );
         }
 
@@ -357,6 +364,17 @@ if (!class_exists('WPSF_Settings')) {
         }
 
         /**
+         * Registers a field in the recaptcha settings page
+         *
+         * @param $id
+         * @param $title
+         */
+        private function add_settings_field_recaptcha($id, $title)
+        {
+            $this->add_settings_field($id, $title, 'wpsf_section-recaptcha');
+        }
+
+        /**
          * Registers a field in the "others" settings page
          *
          * @param $id
@@ -408,6 +426,15 @@ if (!class_exists('WPSF_Settings')) {
             $this->add_settings_field_honeypot('wpsf_honeypot', 'Honeypot protection');
             $this->add_settings_field_honeypot('wpsf_elementname', 'Honeypot HTML form element name');
             $this->add_settings_field_honeypot('wpsf_honeypot_type', 'Honeypot type');
+
+            /*
+             * Recaptcha Section
+             */
+            $this->add_settings_section('wpsf_section-recaptcha', 'Recaptcha');
+
+            $this->add_settings_field_recaptcha('wpsf_recaptcha', 'Recaptcha protection');
+            $this->add_settings_field_recaptcha('wpsf_captcha_site_key', 'Recaptcha Site Key');
+            $this->add_settings_field_recaptcha('wpsf_captcha_secret_key', 'Recaptcha Secret Key');
 
             /*
              * Others Section
@@ -554,6 +581,22 @@ if (!class_exists('WPSF_Settings')) {
             $new_settings = $this->setting_default_if_not_set($new_settings, 'honeypot', 'honeypot', true);
             $new_settings = $this->setting_default_if_not_set($new_settings, 'honeypot', 'element_name', 'more_comment');
             $new_settings = $this->setting_default_if_not_set($new_settings, 'honeypot', 'honeypot_type', 'textarea');
+
+            /*
+             * Recaptcha Settings
+             */
+
+            if (!isset($new_settings['recaptcha'])) {
+                $new_settings['recaptcha'] = array();
+            }
+
+            if (isset($new_settings['recaptcha']['captcha_site_key']) && empty($new_settings['recaptcha']['captcha_site_key'])) {
+                unset($new_settings['recaptcha']['captcha_site_key']);
+            }
+
+            $new_settings = $this->setting_default_if_not_set($new_settings, 'recaptcha', 'recaptcha', false);
+            $new_settings = $this->setting_default_if_not_set($new_settings, 'recaptcha', 'captcha_site_key', '');
+            $new_settings = $this->setting_default_if_not_set($new_settings, 'recaptcha', 'captcha_secret_key', '');
 
             /*
              * Others Settings

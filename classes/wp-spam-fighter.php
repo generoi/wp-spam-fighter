@@ -27,7 +27,7 @@ if (!class_exists('WordPress_Spam_Fighter')) {
         /**
          * Plugin version number
          */
-        const VERSION = '0.4';
+        const VERSION = '0.5';
 
         /**
          * prefix for this plugin, used for enqueued styles and scripts.
@@ -96,12 +96,15 @@ if (!class_exists('WordPress_Spam_Fighter')) {
                 'all'
             );
 
+            wp_register_script("recaptcha", "https://www.google.com/recaptcha/api.js");
+
             if (is_admin()) {
                 wp_enqueue_style(self::PREFIX . 'admin');
                 wp_enqueue_script(self::PREFIX . 'wp-spam-fighter-admin');
             } else {
                 wp_enqueue_style(self::PREFIX . 'wpsf');
                 wp_enqueue_script(self::PREFIX . 'wp-spam-fighter');
+                wp_enqueue_script("recaptcha");
             }
         }
 
@@ -211,6 +214,7 @@ if (!class_exists('WordPress_Spam_Fighter')) {
             add_action('wpmu_new_blog', __CLASS__ . '::activate_new_site');
             add_action('wp_enqueue_scripts', __CLASS__ . '::load_resources');
             add_action('admin_enqueue_scripts', __CLASS__ . '::load_resources');
+            add_action('login_enqueue_scripts', __CLASS__ . '::load_resources');
 
             add_action('comment_form_before', array($this, 'comment_form_before'));
             add_action('comment_form_after_fields', array($this, 'comment_form_after_fields'), 1);
@@ -218,6 +222,7 @@ if (!class_exists('WordPress_Spam_Fighter')) {
             add_action('pre_comment_on_post', array($this, 'pre_comment_on_post'));
             add_filter('pre_comment_approved', array($this, 'pre_comment_approved'), 10, 2);
             add_action('comment_post', array($this, 'comment_post'), 10, 2);
+            add_filter('preprocess_comment', array($this, 'verify_comment_captcha'));
 
 
             add_action('register_form', array($this, 'register_form'));
@@ -276,6 +281,33 @@ if (!class_exists('WordPress_Spam_Fighter')) {
         protected function is_valid($property = 'all')
         {
             return true;
+        }
+
+        public function verify_comment_captcha($commentdata)
+        {
+            if (isset($_POST['g-recaptcha-response'])) {
+                $recaptcha_secret = $this->modules['WPSF_Settings']->settings['recaptcha']['captcha_secret_key'];
+                $response = file_get_contents("https://www.google.com/recaptcha/api/siteverify?secret="
+                    . $recaptcha_secret . "&response=" . $_POST['g-recaptcha-response']);
+                $response = json_decode($response, true);
+                if (true == $response["success"]) {
+                    return $commentdata;
+                } else {
+                    if ($commentdata != "verify_comment_captcha") {
+                        echo __("Bots are not allowed to submit comments.");
+                    }
+                    return null;
+                }
+            } else {
+                if ($this->modules['WPSF_Settings']->settings['recaptcha']['recaptcha']) {
+                    if ($commentdata != "verify_comment_captcha") {
+                        echo __("Bots are not allowed to submit comments. If you are not a bot then please enable JavaScript in browser.");
+                    }
+                    return null;
+                } else {
+                    return $commentdata;
+                }
+            }
         }
 
         /**
@@ -344,7 +376,7 @@ if (!class_exists('WordPress_Spam_Fighter')) {
          */
         function comment_form_after_fields($postID)
         {
-            global $wpsf_not_a_spammer_enabled, $wpsf_timestamp_enabled, $wpsf_honeypot_enabled, $wpsf_javascript_enabled;
+            global $wpsf_recaptcha_enabled, $wpsf_not_a_spammer_enabled, $wpsf_timestamp_enabled, $wpsf_honeypot_enabled, $wpsf_javascript_enabled;
 
             if ($this->modules['WPSF_Settings']->settings['others']['logged_in_users'] || !is_user_logged_in()) {
                 if ($this->modules['WPSF_Settings']->settings['others']['javascript']) {
@@ -413,10 +445,25 @@ if (!class_exists('WordPress_Spam_Fighter')) {
                         $wpsf_not_a_spammer_enabled = true;
                     }
                 }
+
+                if ($this->modules['WPSF_Settings']->settings['recaptcha']['recaptcha']) {
+                    if (!$wpsf_recaptcha_enabled) {
+                        ?>
+                        <p id="wpsf_p" style="clear:both;"></p>
+                        <script type="text/javascript">
+                            window.wpsf_recaptcha_enabled = true;
+                            window.captcha_site_key = "<?php echo $this->modules['WPSF_Settings']->settings['recaptcha']['captcha_site_key']; ?>";
+                        </script>
+                        <noscript><?php echo __('Please enable javascript in order to be allowed to comment', 'wpsf_domain'); ?></noscript>
+                        <?php
+                        $wpsf_recaptcha_enabled = true;
+                    }
+                }
             }
         }
 
-        function comment_post( $comment_ID, $approved ) {
+        function comment_post($comment_ID, $approved)
+        {
         }
 
         /**
@@ -461,15 +508,17 @@ if (!class_exists('WordPress_Spam_Fighter')) {
             return $approved;
         }
 
-        public function handle_auto_delete($id, $comment) {
-            if(!$comment && !is_object($cmt = get_comment($comment))){
+        public function handle_auto_delete($id, $comment)
+        {
+            if (!$comment && !is_object($cmt = get_comment($comment))) {
                 return;
             }
             wp_delete_comment($id, true);
         }
 
-        public function handle_auto_trash($id, $comment) {
-            if(!$comment && !is_object($cmt = get_comment($comment))){
+        public function handle_auto_trash($id, $comment)
+        {
+            if (!$comment && !is_object($cmt = get_comment($comment))) {
                 return;
             }
             wp_trash_comment($id, false);
@@ -482,7 +531,7 @@ if (!class_exists('WordPress_Spam_Fighter')) {
          */
         public function register_form()
         {
-            global $wpsf_not_a_spammer_enabled, $wpsf_timestamp_enabled, $wpsf_honeypot_enabled, $wpsf_javascript_enabled;
+            global $wpsf_recaptcha_enabled, $wpsf_not_a_spammer_enabled, $wpsf_timestamp_enabled, $wpsf_honeypot_enabled, $wpsf_javascript_enabled;
 
             if ($this->modules['WPSF_Settings']->settings['others']['registration']) {
                 if ($this->modules['WPSF_Settings']->settings['others']['javascript']) {
@@ -551,6 +600,20 @@ if (!class_exists('WordPress_Spam_Fighter')) {
                         $wpsf_not_a_spammer_enabled = true;
                     }
                 }
+
+                if ($this->modules['WPSF_Settings']->settings['recaptcha']['recaptcha']) {
+                    if (!$wpsf_recaptcha_enabled) {
+                        ?>
+                        <p id="wpsf_p" style="clear:both;"></p>
+                        <script type="text/javascript">
+                            window.wpsf_recaptcha_enabled = true;
+                            window.captcha_site_key = "<?php echo $this->modules['WPSF_Settings']->settings['recaptcha']['captcha_site_key']; ?>";
+                        </script>
+                        <noscript><?php echo __('Please enable javascript in order to be allowed to comment', 'wpsf_domain'); ?></noscript>
+                        <?php
+                        $wpsf_recaptcha_enabled = true;
+                    }
+                }
             }
         }
 
@@ -588,6 +651,10 @@ if (!class_exists('WordPress_Spam_Fighter')) {
                     $errors->add('spam_error', __('<strong>ERROR</strong>: There was a problem processing your registration.', 'wpsf_domain'));
                 } elseif (($this->modules['WPSF_Settings']->settings['others']['avatar'])
                     && !$this->check_avatar($user_email)
+                ) {
+                    $errors->add('spam_error', __('<strong>ERROR</strong>: There was a problem processing your registration.', 'wpsf_domain'));
+                } elseif (($this->modules['WPSF_Settings']->settings['recaptcha']['recaptcha'])
+                    && $this->verify_comment_captcha("verify_comment_captcha") != "verify_comment_captcha"
                 ) {
                     $errors->add('spam_error', __('<strong>ERROR</strong>: There was a problem processing your registration.', 'wpsf_domain'));
                 } elseif (($this->modules['WPSF_Settings']->settings['others']['not_a_spammer'])

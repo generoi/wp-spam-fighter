@@ -27,7 +27,7 @@ if (!class_exists('WordPress_Spam_Fighter')) {
         /**
          * Plugin version number
          */
-        const VERSION = '0.5';
+        const VERSION = '0.5.1';
 
         /**
          * prefix for this plugin, used for enqueued styles and scripts.
@@ -299,7 +299,9 @@ if (!class_exists('WordPress_Spam_Fighter')) {
                     return null;
                 }
             } else {
-                if ($this->modules['WPSF_Settings']->settings['recaptcha']['recaptcha']) {
+                if ($this->modules['WPSF_Settings']->settings['others']['logged_in_users'] || !is_user_logged_in() &&
+                    ($this->modules['WPSF_Settings']->settings['recaptcha']['recaptcha'])
+                ) {
                     if ($commentdata != "verify_comment_captcha") {
                         echo __("Bots are not allowed to submit comments. If you are not a bot then please enable JavaScript in browser.");
                     }

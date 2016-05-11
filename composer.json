@@ -1,0 +1,28 @@
+{
+  "name": "generoi/wp-spam-fighter",
+  "type": "wordpress-plugin",
+  "license": "MIT",
+  "description": "Fork of wp-spam-fighter",
+  "homepage": "https://github.com/generoi/wp-spam-fighter",
+  "authors": [
+    {
+      "name": "Oskar Schöldström",
+      "email": "public@oxy.fi"
+    }
+  ],
+  "keywords": [
+    "wordpress"
+  ],
+  "support": {
+    "issues": "https://github.com/generoi/wp-spam-fighter/issues"
+  },
+  "require": {
+    "php": ">=5.4.0",
+    "composer/installers": "~1.0"
+  },
+  "archive" : {
+    "exclude": [
+      ".gitignore"
+    ]
+  }
+}

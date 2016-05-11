@@ -211,10 +211,10 @@ if (!class_exists('WordPress_Spam_Fighter')) {
          */
         public function register_hook_callbacks()
         {
-            add_action('wpmu_new_blog', __CLASS__ . '::activate_new_site');
-            add_action('wp_enqueue_scripts', __CLASS__ . '::load_resources');
-            add_action('admin_enqueue_scripts', __CLASS__ . '::load_resources');
-            add_action('login_enqueue_scripts', __CLASS__ . '::load_resources');
+            add_action('wpmu_new_blog', array($this, 'activate_new_site'));
+            add_action('wp_enqueue_scripts', array($this, 'load_resources'));
+            add_action('admin_enqueue_scripts', array($this, 'load_resources'));
+            add_action('login_enqueue_scripts', array($this, 'load_resources'));
 
             add_action('comment_form_before', array($this, 'comment_form_before'));
             add_action('comment_form_after_fields', array($this, 'comment_form_after_fields'), 1);

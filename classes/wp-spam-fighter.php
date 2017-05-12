@@ -230,8 +230,6 @@ if (!class_exists('WordPress_Spam_Fighter')) {
             add_filter('registration_errors', array($this, 'registration_errors'), 10, 3);
             add_filter('wpmu_validate_user_signup', array($this, 'wpmu_validate_user_signup'), 10, 1);
 
-            add_action('init', 'session_start');
-
             add_action('init', array($this, 'init'));
             add_action('init', array($this, 'upgrade'), 11);
         }
@@ -243,10 +241,7 @@ if (!class_exists('WordPress_Spam_Fighter')) {
          */
         public function init()
         {
-            try {
-            } catch (Exception $exception) {
-                add_notice(__METHOD__ . ' error: ' . $exception->getMessage(), 'error');
-            }
+            session_start();
         }
 
         /**
